@@ -1,0 +1,813 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>แทงแดงสำนวน</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Tahoma, Arial, sans-serif;
+      background: #f4f6f8;
+      color: #111827;
+    }
+
+    header {
+      padding: 16px 22px;
+      background: linear-gradient(135deg, #7f1d1d, #b91c1c, #ef4444);
+      color: white;
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 26px;
+    }
+
+    header p {
+      margin: 4px 0 0;
+      font-size: 14px;
+      opacity: 0.9;
+    }
+
+    .app {
+      display: grid;
+      grid-template-columns: 416px 1fr 300px;
+      gap: 14px;
+      padding: 14px;
+      height: calc(100vh - 76px);
+    }
+
+    .panel {
+      background: white;
+      border-radius: 14px;
+      padding: 14px;
+      box-shadow: 0 4px 14px rgba(15, 23, 42, 0.08);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .panel h2 {
+      margin: 0 0 12px;
+      font-size: 18px;
+      color: #7f1d1d;
+      border-bottom: 2px solid #fee2e2;
+      padding-bottom: 8px;
+    }
+
+    .scroll-area {
+      overflow: auto;
+      flex: 1;
+      padding-right: 4px;
+    }
+
+    .doc-row,
+    .case-row {
+      border: 1px solid #e5e7eb;
+      border-radius: 10px;
+      padding: 10px;
+      margin-bottom: 8px;
+      background: white;
+    }
+
+    .doc-row:hover,
+    .case-row:hover {
+      background: #fff7f7;
+      border-color: #fecaca;
+    }
+
+    .doc-title {
+      font-weight: bold;
+      margin-bottom: 8px;
+      line-height: 1.4;
+    }
+
+    label {
+      display: block;
+      font-weight: bold;
+      font-size: 13px;
+      margin: 10px 0 6px;
+    }
+
+    input,
+    textarea {
+      width: 100%;
+      padding: 9px 10px;
+      border: 1px solid #d1d5db;
+      border-radius: 9px;
+      font-family: inherit;
+      font-size: 14px;
+    }
+
+    textarea {
+      min-height: 72px;
+      resize: vertical;
+    }
+
+    button {
+      border: 0;
+      border-radius: 9px;
+      padding: 8px 12px;
+      font-family: inherit;
+      font-weight: bold;
+      cursor: pointer;
+      margin-right: 5px;
+      margin-top: 5px;
+    }
+
+    button:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+    }
+
+    .btn-primary {
+      background: #dc2626;
+      color: white;
+    }
+
+    .btn-secondary {
+      background: #e5e7eb;
+      color: #111827;
+    }
+
+    .btn-success {
+      background: #15803d;
+      color: white;
+    }
+
+    .btn-danger {
+      background: #ef4444;
+      color: white;
+    }
+
+    .btn-small {
+      padding: 6px 8px;
+      font-size: 12px;
+    }
+
+    .summary-box {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .summary-card {
+      background: #fff7ed;
+      border: 1px solid #fed7aa;
+      border-radius: 12px;
+      padding: 12px;
+      text-align: center;
+    }
+
+    .summary-card strong {
+      display: block;
+      font-size: 26px;
+      color: #9a3412;
+    }
+
+    .summary-card span {
+      font-size: 13px;
+      color: #7c2d12;
+    }
+
+    .case-row {
+      display: grid;
+      grid-template-columns: 45px 1fr 90px 145px;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .case-no {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      background: #fee2e2;
+      color: #991b1b;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+    }
+
+    .case-name {
+      font-weight: bold;
+      line-height: 1.4;
+    }
+
+    .empty-state {
+      border: 2px dashed #fecaca;
+      border-radius: 14px;
+      padding: 24px;
+      text-align: center;
+      color: #991b1b;
+      background: #fff7f7;
+    }
+
+    .setting-box {
+      background: #f9fafb;
+      border: 1px solid #e5e7eb;
+      border-radius: 12px;
+      padding: 12px;
+      margin-bottom: 12px;
+    }
+
+    .note {
+      color: #6b7280;
+      font-size: 12px;
+      line-height: 1.7;
+      margin-bottom: 10px;
+    }
+
+    #masterList .doc-row {
+      padding: 11px 12px;
+      margin-bottom: 6px;
+      border-radius: 10px;
+      border: 1px solid #e5e7eb;
+      border-left: 5px solid #dc2626;
+      background: #ffffff;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      transition: 0.15s ease;
+    }
+
+    #masterList .doc-row:hover {
+      background: #fff1f2;
+      border-color: #fecaca;
+      transform: translateX(2px);
+    }
+
+    #masterList .doc-title {
+      font-weight: 700;
+      font-size: 15px;
+      line-height: 1.35;
+      margin: 0;
+    }
+
+    .doc-click-hint {
+      font-size: 12px;
+      color: #991b1b;
+      background: #fee2e2;
+      padding: 4px 8px;
+      border-radius: 999px;
+      white-space: nowrap;
+    }
+
+    .doc-actions {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 3px;
+      flex-shrink: 0;
+      flex-wrap: wrap;
+    }
+
+    .option-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin: 8px 0 10px;
+      font-size: 14px;
+    }
+
+    .option-row input {
+      width: auto;
+    }
+
+    .status {
+      font-size: 13px;
+      color: #6b7280;
+      margin-top: 8px;
+      line-height: 1.5;
+    }
+
+    @media (max-width: 1100px) {
+      .app {
+        grid-template-columns: 1fr;
+        height: auto;
+      }
+
+      .panel {
+        min-height: 300px;
+      }
+
+      .case-row {
+        grid-template-columns: 40px 1fr;
+      }
+
+      .case-pages,
+      .case-actions {
+        grid-column: 2 / 3;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <h1>เว็บแทงแดงสำนวน</h1>
+    <p>สร้างไฟล์ PDF แทงแดงสำนวนการสอบสวน</p>
+  </header>
+
+  <main class="app">
+    <section class="panel">
+      <h2>รายการเอกสาร</h2>
+
+      <div class="note">
+        คลิกเลือกเอกสาร เพื่อเพิ่มเข้าบัญชีสำนวนการสอบสวน
+      </div>
+
+      <div class="setting-box">
+        <label for="newDocName">เพิ่มรายการใหม่</label>
+        <input id="newDocName" type="text" placeholder="เช่น เอกสารธนาคาร" />
+        <button class="btn-primary" onclick="addMasterDocument()">+ เพิ่มรายการ</button>
+      </div>
+
+      <div id="masterList" class="scroll-area"></div>
+    </section>
+
+    <section class="panel">
+      <h2>บัญชีสำนวนการสอบสวน</h2>
+
+      <div class="summary-box">
+        <div class="summary-card">
+          <strong id="totalItems">0</strong>
+          <span>รายการ</span>
+        </div>
+
+        <div class="summary-card">
+          <strong id="totalPages">0</strong>
+          <span>แผ่น</span>
+        </div>
+      </div>
+
+      <div class="option-row">
+        <input id="reverseOrder" type="checkbox" onchange="saveState()" />
+        <label for="reverseOrder" style="margin:0; font-weight:normal;">
+          เรียงเลขแบบย้อนกลับ
+        </label>
+      </div>
+
+      <div style="margin-bottom: 10px;">
+        <button id="generateBtn" class="btn-success" onclick="generatePDF()">สร้าง PDF แทงแดง</button>
+        <button class="btn-danger" onclick="clearCaseList()">ล้างบัญชี</button>
+      </div>
+
+      <div id="statusText" class="status"></div>
+
+      <div id="caseList" class="scroll-area"></div>
+    </section>
+
+    <section class="panel">
+      <h2>วิธีใช้</h2>
+
+      <div class="setting-box">
+        <div class="note">
+          วิธีใช้:<br>
+          1. คลิกรายการเอกสารจากช่องซ้าย<br>
+          2. รายการจะถูกเพิ่มเข้าบัญชีสำนวนการสอบสวน<br>
+          3. ใส่จำนวนแผ่นของแต่ละรายการ<br>
+          4. หากต้องการเพิ่มรายการเอง ให้พิมพ์ชื่อรายการ แล้วกด “+ เพิ่มรายการ” รายการจะเข้าบัญชีสำนวนทันที<br>
+          5. รายการที่เพิ่มเองจะมีปุ่ม “ขึ้น / ลง / ลบ” ในช่องรายการเอกสาร<br>
+          6. รายการที่เพิ่มเองสามารถเลื่อนแทรกผ่านรายการตั้งต้นได้<br>
+          7. รายการตั้งต้นจะไม่มีปุ่มเลื่อนหรือลบ<br>
+          8. กดปุ่ม “ขึ้น” หรือ “ลง” ในบัญชีสำนวน เพื่อจัดลำดับรายการที่จะออก PDF<br>
+          9. ถ้าต้องการเรียงเลขย้อนกลับ ให้ติ๊ก “เรียงเลขแบบย้อนกลับ”<br>
+          10. กด “สร้าง PDF” เพื่อดาวน์โหลดไฟล์ PDF<br>
+          11. ข้อมูลจะถูกจำไว้ในเครื่องผู้ใช้ด้วย localStorage
+        </div>
+      </div>
+
+      <div class="setting-box">
+        <div class="note">
+          หมายเหตุ:<br>
+          - ทดลองใช้
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const STORAGE_KEY = "thaeng_daeng_flask_v2";
+
+    // ล้างข้อมูลเดิมจากเวอร์ชันเก่า
+    localStorage.removeItem("thaeng_daeng_flask_v1");
+
+    const defaultDocuments = [
+      "บัญชีสำนวนการสอบสวน",
+      "พิมพ์มือผู้ต้องหา",
+      "สำเนาคำร้องฝากขัง",
+      "บันทึกควบคุมผู้ต้องหา",
+      "บันทึกแจ้งสิทธิผู้ต้องหา",
+      "สำเนาบันทึกประจำวันคดี",
+      "สำเนาเอกสารเกี่ยวกับคดี",
+      "บันทึกจับกุม",
+      "บันทึกแจ้งข้อหา",
+      "ผลตรวจพิสูจน์หลักฐานในคดี",
+      "ภาพประกอบคดี",
+      "บันทึกตรวจสถานที่เกิดเหตุ/แผนที่",
+      "บันทึกพนักงานสอบสวน",
+      "บัญชีทรัพย์ฯ",
+      "บัญชีของกลางคดีอาญา",
+      "คำให้การพยาน",
+      "คำให้การผู้ต้องหา",
+      "คำให้การผู้กล่าวหา",
+      "รายงานการสอบสวน"
+    ];
+
+    let masterDocuments = [...defaultDocuments];
+    let caseItems = [];
+
+    function escapeHTML(value) {
+      return String(value || "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    function normalizeText(value) {
+      return String(value || "").trim();
+    }
+
+    function uniqueDocuments(list) {
+      const seen = new Set();
+      const result = [];
+
+      list.forEach((item) => {
+        const name = normalizeText(item);
+        if (!name || seen.has(name)) return;
+
+        seen.add(name);
+        result.push(name);
+      });
+
+      return result;
+    }
+
+    function pad2(value) {
+      return String(value).padStart(2, "0");
+    }
+
+    function getTimestamp() {
+      const now = new Date();
+
+      return `${now.getFullYear()}${pad2(now.getMonth() + 1)}${pad2(now.getDate())}_${pad2(now.getHours())}${pad2(now.getMinutes())}${pad2(now.getSeconds())}`;
+    }
+
+    function renderMasterList() {
+      const container = document.getElementById("masterList");
+      container.innerHTML = "";
+
+      masterDocuments.forEach((name, index) => {
+        const isUserAdded = !defaultDocuments.includes(name);
+
+        const canMoveUp = isUserAdded && index > 0;
+        const canMoveDown = isUserAdded && index < masterDocuments.length - 1;
+
+        const row = document.createElement("div");
+        row.className = "doc-row";
+        row.title = "คลิกเพื่อเพิ่มเข้าบัญชีสำนวนการสอบสวน";
+        row.onclick = () => addCaseItem(name);
+
+        row.innerHTML = `
+          <div class="doc-title">${escapeHTML(name)}</div>
+
+          ${
+            isUserAdded
+              ? `
+                <div class="doc-actions">
+                  <div class="doc-click-hint">คลิกเพื่อเพิ่ม</div>
+
+                  <button
+                    class="btn-secondary btn-small"
+                    onclick="event.stopPropagation(); moveMasterDocument(${index}, -1);"
+                    ${canMoveUp ? "" : "disabled"}
+                    title="เลื่อนขึ้น"
+                  >
+                    ขึ้น
+                  </button>
+
+                  <button
+                    class="btn-secondary btn-small"
+                    onclick="event.stopPropagation(); moveMasterDocument(${index}, 1);"
+                    ${canMoveDown ? "" : "disabled"}
+                    title="เลื่อนลง"
+                  >
+                    ลง
+                  </button>
+
+                  <button
+                    class="btn-danger btn-small"
+                    onclick="event.stopPropagation(); removeMasterDocument(${index});"
+                    title="ลบรายการที่เพิ่มเอง"
+                  >
+                    ลบ
+                  </button>
+                </div>
+              `
+              : `
+                <div class="doc-click-hint">คลิกเพื่อเพิ่ม</div>
+              `
+          }
+        `;
+
+        container.appendChild(row);
+      });
+    }
+
+    function renderCaseList() {
+      const container = document.getElementById("caseList");
+      container.innerHTML = "";
+
+      if (caseItems.length === 0) {
+        container.innerHTML = `<div class="empty-state">ยังไม่มีรายการในบัญชีสำนวนการสอบสวน</div>`;
+        updateSummary();
+        return;
+      }
+
+      caseItems.forEach((item, index) => {
+        const row = document.createElement("div");
+        row.className = "case-row";
+
+        row.innerHTML = `
+          <div class="case-no">${index + 1}</div>
+
+          <div class="case-name">${escapeHTML(item.name)}</div>
+
+          <div class="case-pages">
+            <input
+              type="number"
+              min="1"
+              value="${Number(item.pages || 1)}"
+              oninput="updateCasePages(${index}, this.value)"
+              title="จำนวนแผ่น"
+            />
+          </div>
+
+          <div class="case-actions">
+            <button class="btn-secondary btn-small" onclick="moveItem(${index}, -1)">ขึ้น</button>
+            <button class="btn-secondary btn-small" onclick="moveItem(${index}, 1)">ลง</button>
+            <button class="btn-danger btn-small" onclick="removeCaseItem(${index})">ลบ</button>
+          </div>
+        `;
+
+        container.appendChild(row);
+      });
+
+      updateSummary();
+    }
+
+    function updateSummary() {
+      const totalItems = caseItems.length;
+      const totalPages = caseItems.reduce((sum, item) => {
+        return sum + Math.max(1, Number(item.pages || 1));
+      }, 0);
+
+      document.getElementById("totalItems").textContent = totalItems;
+      document.getElementById("totalPages").textContent = totalPages;
+    }
+
+    function addMasterDocument() {
+      const input = document.getElementById("newDocName");
+      const name = input.value.trim();
+
+      if (!name) {
+        alert("กรุณากรอกชื่อรายการเอกสาร");
+        return;
+      }
+
+      if (!masterDocuments.includes(name)) {
+        masterDocuments.push(name);
+      }
+
+      caseItems.push({
+        name: name,
+        pages: 1
+      });
+
+      input.value = "";
+
+      renderMasterList();
+      renderCaseList();
+      saveState();
+    }
+
+    function removeMasterDocument(index) {
+      const name = masterDocuments[index];
+
+      if (defaultDocuments.includes(name)) {
+        alert("รายการเอกสารตั้งต้นไม่สามารถลบได้");
+        return;
+      }
+
+      if (!confirm("ต้องการลบรายการเอกสารที่เพิ่มเองนี้ใช่หรือไม่")) return;
+
+      masterDocuments.splice(index, 1);
+      renderMasterList();
+      saveState();
+    }
+
+    function moveMasterDocument(index, direction) {
+      const name = masterDocuments[index];
+
+      if (defaultDocuments.includes(name)) {
+        return;
+      }
+
+      const newIndex = index + direction;
+
+      if (newIndex < 0 || newIndex >= masterDocuments.length) {
+        return;
+      }
+
+      const item = masterDocuments.splice(index, 1)[0];
+      masterDocuments.splice(newIndex, 0, item);
+
+      renderMasterList();
+      saveState();
+    }
+
+    function addCaseItem(name) {
+      caseItems.push({
+        name: name,
+        pages: 1
+      });
+
+      renderCaseList();
+      saveState();
+    }
+
+    function updateCasePages(index, value) {
+      if (!caseItems[index]) return;
+
+      caseItems[index].pages = Math.max(1, Number(value || 1));
+      updateSummary();
+      saveState(false);
+    }
+
+    function removeCaseItem(index) {
+      caseItems.splice(index, 1);
+      renderCaseList();
+      saveState();
+    }
+
+    function moveItem(index, direction) {
+      const newIndex = index + direction;
+
+      if (newIndex < 0 || newIndex >= caseItems.length) return;
+
+      const item = caseItems.splice(index, 1)[0];
+      caseItems.splice(newIndex, 0, item);
+
+      renderCaseList();
+      saveState();
+    }
+
+    function clearCaseList() {
+      if (!confirm("ต้องการล้างบัญชีสำนวนการสอบสวนทั้งหมดใช่หรือไม่")) return;
+
+      caseItems = [];
+      renderCaseList();
+      saveState();
+    }
+
+    async function generatePDF() {
+      if (caseItems.length === 0) {
+        alert("กรุณาเพิ่มรายการเอกสารก่อนสร้าง PDF");
+        return;
+      }
+
+      const generateBtn = document.getElementById("generateBtn");
+      const statusText = document.getElementById("statusText");
+
+      generateBtn.disabled = true;
+      statusText.textContent = "กำลังสร้าง PDF...";
+
+      const payload = {
+        reverse: document.getElementById("reverseOrder").checked,
+        documents: caseItems.map((item) => ({
+          name: item.name,
+          pages: Math.max(1, Number(item.pages || 1))
+        }))
+      };
+
+      try {
+        const response = await fetch("/generate_pdf", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(payload)
+        });
+
+        if (!response.ok) {
+          let message = "สร้าง PDF ไม่สำเร็จ";
+
+          try {
+            const errorData = await response.json();
+            if (errorData && errorData.error) {
+              message = errorData.error;
+            }
+          } catch (error) {
+            message = await response.text();
+          }
+
+          throw new Error(message);
+        }
+
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = `thaeng_daeng_${getTimestamp()}.pdf`;
+        document.body.appendChild(link);
+        link.click();
+
+        link.remove();
+        window.URL.revokeObjectURL(url);
+
+        statusText.textContent = "สร้าง PDF สำเร็จ";
+      } catch (error) {
+        console.error(error);
+        statusText.textContent = "";
+        alert(error.message || "สร้าง PDF ไม่สำเร็จ");
+      } finally {
+        generateBtn.disabled = false;
+      }
+    }
+
+    function saveState(updateOnly = true) {
+      const data = {
+        masterDocuments: masterDocuments,
+        caseItems: caseItems,
+        reverse: document.getElementById("reverseOrder").checked
+      };
+
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+
+      if (updateOnly) {
+        updateSummary();
+      }
+    }
+
+    function loadState() {
+      const raw = localStorage.getItem(STORAGE_KEY);
+
+      if (!raw) return;
+
+      try {
+        const data = JSON.parse(raw);
+
+        if (Array.isArray(data.masterDocuments)) {
+          const savedDocuments = data.masterDocuments
+            .map(normalizeText)
+            .filter(Boolean);
+
+          const missingDefaultDocuments = defaultDocuments.filter((name) => {
+            return !savedDocuments.includes(name);
+          });
+
+          masterDocuments = uniqueDocuments([
+            ...savedDocuments,
+            ...missingDefaultDocuments
+          ]);
+        }
+
+        if (Array.isArray(data.caseItems)) {
+          caseItems = data.caseItems
+            .filter((item) => item && item.name)
+            .map((item) => ({
+              name: normalizeText(item.name),
+              pages: Math.max(1, Number(item.pages || 1))
+            }));
+        }
+
+        document.getElementById("reverseOrder").checked = Boolean(data.reverse);
+      } catch (error) {
+        console.warn("โหลดข้อมูลเก่าไม่สำเร็จ", error);
+      }
+    }
+
+    document.getElementById("newDocName").addEventListener("keydown", function(event) {
+      if (event.key === "Enter") {
+        addMasterDocument();
+      }
+    });
+
+    loadState();
+    renderMasterList();
+    renderCaseList();
+  </script>
+</body>
+</html>
